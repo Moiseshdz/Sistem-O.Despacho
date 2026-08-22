@@ -1,0 +1,52 @@
+name: Build PROMAD Capturador EXE
+
+on:
+  push:
+    branches: [promad-capturador-exe]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: 'x64'
+
+      - name: Install Python dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller==6.16.0 Pillow==11.3.0 pytesseract==0.3.13
+
+      - name: Install and stage Tesseract OCR
+        shell: pwsh
+        run: |
+          choco install tesseract --yes --no-progress
+          $src = 'C:\Program Files\Tesseract-OCR'
+          if (!(Test-Path $src)) { throw "Tesseract no se instaló en $src" }
+          Copy-Item $src -Destination '.\promad_builder\tesseract' -Recurse -Force
+          Invoke-WebRequest 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/spa.traineddata' -OutFile '.\promad_builder\tesseract\tessdata\spa.traineddata'
+          Invoke-WebRequest 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/eng.traineddata' -OutFile '.\promad_builder\tesseract\tessdata\eng.traineddata'
+
+      - name: Build single EXE
+        shell: pwsh
+        working-directory: promad_builder
+        run: |
+          pyinstaller --noconfirm --clean --onefile --windowed --noupx --name PROMAD_Capturador_Nota --add-data "tesseract;tesseract" --collect-all PIL --collect-all pytesseract promad_onefile.py
+          if (!(Test-Path '.\dist\PROMAD_Capturador_Nota.exe')) { throw 'No se generó el EXE' }
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: PROMAD_Capturador_Nota_EXE
+          path: promad_builder/dist/PROMAD_Capturador_Nota.exe
+          if-no-files-found: error
+          compression-level: 0
