@@ -3,6 +3,8 @@ name: Build PROMAD Capturador EXE
 on:
   push:
     branches: [promad-capturador-exe]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
