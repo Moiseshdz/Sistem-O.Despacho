@@ -1,0 +1,1 @@
+Atajos: F7 seleccionar área, F9 iniciar/detener vista en vivo, F8 leer datos PROMAD. OCR automático opcional cada 3 segundos.

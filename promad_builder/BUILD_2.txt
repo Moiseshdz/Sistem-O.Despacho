@@ -1,0 +1,1 @@
+PROMAD Capturador en Vivo v2.0.0 - selección dinámica de área tipo OBS y vista en vivo.
