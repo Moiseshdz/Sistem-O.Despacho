@@ -1,0 +1,6 @@
+v2.0.0
+- Selección de área libre con arrastre tipo OBS.
+- Vista en vivo del área seleccionada.
+- F7 seleccionar área, F8 leer OCR, F9 iniciar/detener vivo.
+- OCR automático opcional cada 3 segundos.
+- El área seleccionada se recuerda entre sesiones.
